@@ -74,12 +74,37 @@ class TestBases(TestCase):
                 'to_base': 10,
                 'expected': '0.875'
             },
+            # Conversion to Any
             {
                 'number': 0.5,
                 'from_base': 10,
                 'to_base': 2,
                 'expected': '0.1',
             },
+            {
+                'number': 0.33,
+                'from_base': 10,
+                'to_base': 2,
+                'expected': '0.010101000111101011100001010001111010111000010100011111',
+            },
+            {
+                'number': 56.33,
+                'from_base': 10,
+                'to_base': 2,
+                'expected': '111000.010101000111101011100001010001111010111000010100011111',
+            },
+            {
+                'number': 56.34,
+                'from_base': 8,
+                'to_base': 2,
+                'expected': '101110.0111',
+            },
+            {
+                'number': '0.010101000111101011100001010001111010111000010100011111',
+                'from_base': 2,
+                'to_base': 10,
+                'expected': '0.33',
+            }
         ]
         for test in tests:
             

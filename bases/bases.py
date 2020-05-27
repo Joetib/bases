@@ -111,10 +111,18 @@ class Converter:
                 to base 10 and then to the desired base.
                 Leaving both to_base and from_base blank just results
                 returning the value
+            note: 
+                Note that passing long floats as number trims the decimal places automatically.
+                Hence it is better to use strings if the number contains a lot of floating points
+                to promote accuracy.
             arguments:
                 number: 
-                    types: str, int
+                    types: str, int, float
                     default: None
+                    note: 
+                        Note that passing long floats as number trims the decimal places automatically.
+                        Hence it is better to use strings if the number contains a lot of floating points
+                        to promote accuracy.
                 to_base:
                     description: The base to convert to
                     types: int
@@ -150,11 +158,18 @@ class Converter:
         from_base_ten:
             description:
                 Converts a number from base ten to the specified base.
+            note: 
+                Note that passing long floats as number trims the decimal places automatically.
+                Hence it is better to use strings if the number contains a lot of floating points
+                to promote accuracy.
             arguments:
                 number: 
-                    types: str, int
+                    types: str, int, float
                     default: None
-                
+                    note: 
+                        Note that passing long floats as number trims the decimal places automatically.
+                        Hence it is better to use strings if the number contains a lot of floating points
+                        to promote accuracy.
                 base:
                     description: The base we are converting to
                     types: int
@@ -171,7 +186,7 @@ class Converter:
         number = str(number)
         # check if there is a decimal point in the number
         if '.' in number:
-            decimals = f".{self._decimal_from_base_ten(str(number).split('.')[1], base)}"
+            decimals = f".{self._decimal_from_base_ten('.'+str(number).split('.')[1], base)}"
         number = int(float(number)) # int(float()) required because in cannot convert strings like '0.5'
         while True:
             if number < base:
@@ -189,14 +204,22 @@ class Converter:
         return stack.to_base_string() + decimals
 
 
-    def to_base_ten(self, number: Union[str, int], base) -> str:
+    def to_base_ten(self, number: Union[str, int, float], base) -> str:
         """
         to_base_ten:
             description:
                 Converts a number from a given base to  base ten.
+            note: 
+                Note that passing long floats as number trims the decimal places automatically.
+                Hence it is better to use strings if the number contains a lot of floating points
+                to promote accuracy.
             arguments:
                 number: 
-                    types: str, int
+                    types: str, int, float
+                    note: 
+                        Note that passing long floats trims the decimal places automatically.
+                        Hence it is better to use strings if the number contains a lot of floating points
+                        to promote accuracy.
                     default: None
                 
                 base:
@@ -238,7 +261,7 @@ class Converter:
                 This function is not intended to be used directly but to be used by to_base_ten
             arguments:
                 number: 
-                    types: str, int
+                    types: str
                     default: None
                 
                 base:
@@ -255,9 +278,9 @@ class Converter:
         if not '.' in number:
             raise Exception('_decimal_to_base: number must contain "."')
         number = number.split('.')[1]
+        print(number)
         result: int = 0
         for i in range(0, len(number)):
-        
             current_char: str = number[i]
             result += int(letters_to_num.get(current_char, current_char)) * (base ** -(i+1))
         return str(result).split('.')[-1]
@@ -275,7 +298,7 @@ class Converter:
                 This function is not intended to be used directly but to be used by from_base_ten
             arguments:
                 number: 
-                    types: str, int
+                    types: str
                     default: None
                 
                 base:
@@ -290,8 +313,7 @@ class Converter:
                 
         """
         stack: BaseStack = BaseStack()
-        
-        number = int(number)
+        number = float(number)
         while True:
             
             number = float(number*base)
@@ -299,8 +321,6 @@ class Converter:
 
                 # This is to remove trailing zeros betore pushing number to stack;
                 if number != 0:
-                    if str(number).endswith('0'):
-                        number = number/10
                     stack.push(int(number))
                 break
             whole = int(number)
@@ -313,6 +333,7 @@ class Converter:
             # Substracting the whole number part was chosen for a few reasons
             number -= whole
                 
-        return stack.to_base_string()
+        return stack.to_base_string()[::-1]
 
 
+print(Converter().convert('0.010101000111101011100001010001111010111000010100011111', 10, 2))
