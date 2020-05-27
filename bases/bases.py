@@ -135,7 +135,7 @@ class Converter:
         """
 
         # Cannot convert to or from base 1 and below
-        if from_base <= 1  or to_base <= 1:
+        if from_base <= 1  or to_base <= 1 or from_base > 27 or to_base > 27 :
             return
 
         if from_base != 10:
