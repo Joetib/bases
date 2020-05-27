@@ -133,6 +133,11 @@ class Converter:
                 convert(number=10, from_base=11) 
                     converts from base 11 to base 10
         """
+
+        # Cannot convert to or from base 1 and below
+        if from_base <= 1  or to_base <= 1:
+            return
+
         if from_base != 10:
             number = self.to_base_ten(number, from_base)
         if to_base != 10:
