@@ -16,7 +16,15 @@ num_to_letters: Dict = {
     16: 'G',
     17: 'H',
     18: 'I',
-    19: 'J'
+    19: 'J',
+    20: "K",
+    21: 'L',
+    22: 'M',
+    23: 'N',
+    24: 'O',
+    25: 'P',
+    26: 'Q',
+    27: 'R'
 }
 
 # Dictionary that maps alphabets to their numeric form
@@ -34,6 +42,14 @@ letters_to_num: Dict = {
     'H': 17,
     'I': 18,
     'J': 19,
+    'K': 20,
+    "L": 21,
+    "M": 22,
+    "N": 23,
+    "O": 24,
+    "P": 25,
+    "Q": 26,
+    "R": 27
 }
 class BaseStack:
     """
@@ -146,7 +162,12 @@ class Converter:
                 
         """
         stack: BaseStack = BaseStack()
-        number = int(number)
+        decimals = ""
+        number = str(number)
+        # check if there is a decimal point in the number
+        if '.' in number:
+            decimals = f".{self._decimal_from_base_ten(str(number).split('.')[1], base)}"
+        number = int(float(number)) # int(float()) required because in cannot convert strings like '0.5'
         while True:
             if number < base:
                 # if the number is greater than 9, get its corresponding
@@ -160,7 +181,7 @@ class Converter:
                 # letter and push to the stack else push the remainder to the
                 # stack
                 stack.push(num_to_letters.get(remainder, remainder)) 
-        return stack.to_base_string()
+        return stack.to_base_string() + decimals
 
 
     def to_base_ten(self, number: Union[str, int], base) -> str:
@@ -183,14 +204,110 @@ class Converter:
                 to_base_ten(number=10, base=2)
                     convert from base 2 to base 10
         """
-        number = str(number)[::-1]
+        
+        decimals = ""
+        number = str(number)
+
+        # check if there is a decimal point in the number
+        if '.' in number: 
+            decimals = f".{self._decimal_to_base_ten('.'+number.split('.')[-1], base)}"
+        number = number.split('.')[0][::-1]
         result = 0
         for i in range(len(number)-1, -1, -1):
             # if the current character (ie. number[i]) is a letter, get its corresponding
             # numeric value for the calculation otherwise it is considered a number and used directly
             result += int(letters_to_num.get(number[i], number[i])) * base ** i
-        return str(result)
+        
+
+        return f'{result}{decimals}' 
 
 
+    def _decimal_to_base_ten(self, number: str, base: int) -> str:
+        """
+        _decimal_to_base_ten:
+            description:
+                Converts the decimal part number from a given base to  base ten.
+                As an example, if you pass in 10 base 2 you will get 0.5 base ten
+                Thus it assumes the 10 based in came from a number of the format *.10 base 2,
+                where * refers to the whole number part of the actual number.
+                This function is not intended to be used directly but to be used by to_base_ten
+            arguments:
+                number: 
+                    types: str, int
+                    default: None
+                
+                base:
+                    description: The base we are converting the number from
+                    types: int
+                    default: None
+            returns:
+                type: str
+            example:
+                _decimal_to_base_ten(number=10, base=2)
+                    convert from base 2 to base 10
+        """
+        
+        if not '.' in number:
+            raise Exception('_decimal_to_base: number must contain "."')
+        number = number.split('.')[1]
+        result: int = 0
+        for i in range(0, len(number)):
+        
+            current_char: str = number[i]
+            result += int(letters_to_num.get(current_char, current_char)) * (base ** -(i+1))
+        return str(result).split('.')[-1]
+    
+
+    def _decimal_from_base_ten(self, number: str, base: int) -> str:
+        """
+        _decimal_from_base_ten:
+            description:
+                Converts the decimal part number from  base ten to a given base.
+                As an example, if you pass in 5 as number and base 10 you will get 1 base 2
+                Keep in mind that alll these are floating point numbers.
+                Thus it assumes the 5 based in came from a number of the format *.5 base 10,
+                where * refers to the whole number part of the actual number.
+                This function is not intended to be used directly but to be used by from_base_ten
+            arguments:
+                number: 
+                    types: str, int
+                    default: None
+                
+                base:
+                    description: The base we are converting to
+                    types: int
+                    default: None
+            returns:
+                type: str
+            example:
+                _decimal_from_base_ten(number=5, base=2)
+                    convert from base 10 to base 2 where number is allegedly from a source as *.5
+                
+        """
+        stack: BaseStack = BaseStack()
+        
+        number = int(number)
+        while True:
+            
+            number = float(number*base)
+            if number.is_integer():
+
+                # This is to remove trailing zeros betore pushing number to stack;
+                if number != 0:
+                    if str(number).endswith('0'):
+                        number = number/10
+                    stack.push(int(number))
+                break
+            whole = int(number)
+            
+            # if the remainder is greater than 9, get its corresponding
+            # letter and push to the stack else push the remainder to the
+            # stack
+            stack.push(num_to_letters.get(whole, whole))
+                
+            # Substracting the whole number part was chosen for a few reasons
+            number -= whole
+                
+        return stack.to_base_string()
 
 

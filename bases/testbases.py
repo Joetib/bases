@@ -67,10 +67,22 @@ class TestBases(TestCase):
                 'from_base': 11,
                 'to_base': 10,
                 'expected': '120'
-            }
+            },
+            {
+                'number': 0.111,
+                'from_base': 2,
+                'to_base': 10,
+                'expected': '0.875'
+            },
+            {
+                'number': 0.5,
+                'from_base': 10,
+                'to_base': 2,
+                'expected': '0.1',
+            },
         ]
         for test in tests:
-            print(test)
+            
             self.assertEqual(
                 bases.Converter().convert(
                     test['number'], test['to_base'], test['from_base']
